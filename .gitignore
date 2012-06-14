@@ -1,0 +1,12 @@
+.DS_Store
+.project
+.settings
+MathJax.js
+config/*
+docs/*
+extensions/*
+fonts/*
+images/*
+jax/*
+test/*
+
