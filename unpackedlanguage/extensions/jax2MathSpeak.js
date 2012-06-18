@@ -254,6 +254,9 @@ MathJax.Extension.jax2MathSpeak = {
 
 		processMathOperator: function(hex, item) {
 			if (item === "x") return this.lang.timesText + " ";
+			if (this.lang.isArrow(hex)) {
+					return this.lang.arrowText(hex, this.verbosity);
+			}
 			if (this.lang.mocodes[item]) {
 				return this.lang.mocodes[item] + " ";
 			}
@@ -288,7 +291,8 @@ MathJax.Extension.jax2MathSpeak = {
 		},
 
 		scientificNotationMathSpeak: function(n) {
-			var ms = this.lang.numberIndicator(this.verbosity);
+			return this.genericNumberMathSpean(n);
+			/*var ms = this.lang.numberIndicator(this.verbosity);
 			var eInd;
 			if (n.contains("e")) {
 				eInd = n.indexOf("e");
@@ -300,7 +304,7 @@ MathJax.Extension.jax2MathSpeak = {
 		
 			ms += this.numberMathSpeak(num);
 			ms += this.lang.scientificNotation(this.getNumberMathSpeak(exp));
-			return ms;
+			return ms;*/
 		},
 
 		romanNumeralMathSpeak: function(n) {
