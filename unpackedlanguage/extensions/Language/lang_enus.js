@@ -21,8 +21,12 @@ MathJax.Extension.lang_enus = {
 	//TODO: allow for modifiying with varying overscripts	
 	endOverScriptText: "with Bar",	
 
-	midSubscriptText: "Subscript",
+	midSubscriptVerboseText: "Subscript",
+	midSubscriptBriefText: "Sub",
+
 	midSuperscriptText: "Superscript",
+	midSuperscriptBriefText: "Sup",
+
 	endSubscriptSuperscriptText: "Baseline",
 
 	negativeText: "Negative",
@@ -46,7 +50,7 @@ MathJax.Extension.lang_enus = {
 	rightParenBriefText: "right-p'ren",
 	rightParenSuperBriefText: "R p'ren",
 
-	elipsesText: "Elipses",
+	ellipsesText: "Ellipses",
 
 	functionOfText: "of",
 
@@ -70,6 +74,10 @@ MathJax.Extension.lang_enus = {
 	rightBraceVerboseText: "EndSet",
 	rightBraceBriefText: "EndSet",
 
+	absValStartVerboseText: "StartAbsoluteValue",
+	absValStartBriefText: "AbsolueValue",
+	absValEndVerboseText: "EndAbsoluteValue",
+	absValEndBriefText: "EndAbsoluteValue",
 
 	/* ------------------------------------------------------- */
 
@@ -97,12 +105,18 @@ MathJax.Extension.lang_enus = {
 		return this.midFractionText + " ";
 	},
 
-	midSuperscript: function() {
-		return this.midSuperscriptText + " ";
+	midSuperscript: function(v) {
+		if (v === 0) {
+			return this.midSuperscriptVerboseText + " ";
+		}
+		return this.midSuperscriptBriefText + " ";
 	},
 
-	midSubscript: function() {
-		return this.midSubscriptText + " ";
+	midSubscript: function(v) {
+		if (v === 0) {
+			return this.midSubScriptVerboseText + " ";
+		}
+		return this.midSubscriptBriefText + " ";
 	},
 
 	endFrac: function() {
@@ -135,10 +149,6 @@ MathJax.Extension.lang_enus = {
 
 	uppercase: function() {
 		return this.uppercaseText + " ";
-	},
-
-	elipses: function() {
-		return this.elipsesText + " ";
 	},
 
 	functionOf: function() {
@@ -265,6 +275,24 @@ MathJax.Extension.lang_enus = {
 			} else {
 				return this.rightBraceBriefText + " ";
 			}
+		}
+	},
+
+	absValText: function(k, v) {
+		if (k === "start") {
+			if (v === 0 || v === 1) {
+				return this.absValStartVerboseText + " ";
+			} else {
+				return this.absValStartBriefText + " ";
+			}
+		} else if (k === "end") {
+			if (v === 0 || v === 1) {
+				return this.absValEndVerboseText + " ";
+			} else {
+				return this.absValEndBriefText + " ";
+			}
+		} else {
+			return "abs val error";
 		}
 	},
 
@@ -431,13 +459,9 @@ MathJax.Extension.lang_enus = {
 		"]" : "right square bracket",
 		"{" : "left curly bracket",
 		"|" : "vertical line",
-		"|" : "vertical line",
 		"||" : "multiple character operator: ||",
-		"||" : "multiple character operator: ||",
-		"|||" : "multiple character operator: |||",
 		"|||" : "multiple character operator: |||",
 		"}" : "right curly bracket",
-		"2016" : "double vertical line",
 		"2016" : "double vertical line",
 		"2308" : "left ceiling",
 		"2309" : "right ceiling",
@@ -488,7 +512,7 @@ MathJax.Extension.lang_enus = {
 		"2235" : "because",
 		"->" : "multiple character operator: ->",
 		".." : "multiple character operator: ..",
-		"..." : "multiple character operator: ...",
+		"..." : "Ellipses",
 		":" : "colon",
 		"3F6" : "greek reversed lunate epsilon symbol",
 		"2026" : "horizontal ellipsis",

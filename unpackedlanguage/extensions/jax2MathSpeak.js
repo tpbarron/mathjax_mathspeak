@@ -154,6 +154,7 @@ MathJax.Extension.jax2MathSpeak = {
 		previous: "",
 		inFunction: false,
 		parenCount: 0,
+		inAbsVal: false,
 		lang: "",
 		verbosity: 0,
 	
@@ -186,8 +187,8 @@ MathJax.Extension.jax2MathSpeak = {
 
 		middleHandler: function(e) {
 			if (e === "mfrac") return this.lang.midFrac();
-			if (e === "msup") return this.lang.midSuperscript();
-			if (e === "msub") return this.lang.midSubscript();
+			if (e === "msup") return this.lang.midSuperscript(this.verbosity);
+			if (e === "msub") return this.lang.midSubscript(this.verbosity);
 		},
 
 		hasEndHandler: function(t) {
@@ -346,9 +347,9 @@ MathJax.Extension.jax2MathSpeak = {
 					return ms + item + " ";
 				}
 			}
-			if (item === "...") {
-				return this.lang.elipses();
-			}
+			//if (item === "...") {
+			//	return this.lang.ellipses();
+			//}
 			if (this.lang.trig[item]) {
 				return this.lang.trig[item] + " ";
 			}
@@ -374,6 +375,7 @@ MathJax.Extension.jax2MathSpeak = {
 			//if f...() need to say f of (...)
 			if (this.isParen(item, hex)) {return true;}
 			//if (item === "(" || item === ")") return true;
+			if (item === "|") {return true;} //abs val
 			return false;
 		},
 
@@ -417,6 +419,15 @@ MathJax.Extension.jax2MathSpeak = {
 				}
 				return this.processMathOperator("null", item, hex); // RightParen
 				//decrement parent count, if paren count == 0, set inside func = false, return "" end of function
+			}
+			if (item === "|") { //abs val
+				if (!this.inAbsVal) {
+					this.inAbsVal = true;
+					return this.lang.absValText("start", this.verbosity);
+				} else {
+					this.inAbsVal = false;
+					return this.lang.absValText("end", this.verbosity);
+				}
 			}
 		},
 
