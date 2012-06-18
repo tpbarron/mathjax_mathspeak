@@ -34,14 +34,6 @@ MathJax.Extension.lang_enus = {
 	numberSignVerboseText: "Number-sign",
 	numberSignBriefText: "num-sign",
 
-	//TODO: check whether I need this or whether I can just do 3 e 10 for ex
-	//scientificNotationText: "times 10 to the",
-	//TODO: ordinal suffixes
-	//ordinalFirstSuffix: "st",
-	//ordinalSecondSuffix: "nd",
-	//ordinalThirdSuffix: "rd",
-	//ordinalNSuffix: "th",	
-
 	lowercaseCharText: "Lower",
 	uppercaseCharText: "Upper",
 	lowercaseWordText: "LowerWord",
@@ -59,6 +51,11 @@ MathJax.Extension.lang_enus = {
 	functionOfText: "of",
 
 	timesText: "Times",
+
+	leftArrowVerboseText: "LeftArrow",
+	leftArrowBriefText: "L arrow",
+	rightArrowVerboseText: "RightArrow",
+	rightArrowBriefText: "R arrow",
 
 	/* ------------------------------------------------------- */
 
@@ -118,10 +115,6 @@ MathJax.Extension.lang_enus = {
 		return this.minusText + " ";
 	},
 
-	scientificNotation: function(num) {
-		return this.scientificNotationText + " " + num + this.ordinalSuffix(exp) + " ";
-	},
-
 	lowercase: function() {
 		return this.lowercaseText + " ";
 	},
@@ -172,11 +165,6 @@ MathJax.Extension.lang_enus = {
 		}
 	},
 
-	/*ordinalSuffix: function(n) {
-		//TODO: return the correct ordinal suffix for the given number
-		return "th";
-	},*/
-
 	getCharMathSpeak: function(c, chex, v) {
 		if (this.mocodes[c]) {
 			return this.mocodes[c] + " ";
@@ -204,6 +192,30 @@ MathJax.Extension.lang_enus = {
 				return this.uppercaseCharText + " ";
 			}
 		}
+	},
+
+	arrowText: function(hex, v) {
+		if (hex === "2190") {
+			if (v === 0) { //verbose
+				return this.leftArrowVerboseText + " ";
+			} else {
+				return this.leftArrowBriefText + " ";
+			}
+		} //left
+		if (hex === "2192") {
+			if (v === 0) { //verbose
+				return this.rightArrowVerboseText + " ";
+			} else {
+				return this.rightArrowBriefText + " ";
+			}
+		} //right
+	},
+
+	isArrow: function(hex) {
+		if (hex === "2190" || hex === "2192") {
+			return true;
+		}
+		return false;
 	},
 
 	trig: {
@@ -1030,9 +1042,9 @@ MathJax.Extension.lang_enus = {
 		"|" : "vertical line",
 		"||" : "multiple character operator: ||",
 		"|||" : "multiple character operator: |||",
-		"2190" : "leftwards arrow",
+		"2190" : "left-arrow",
 		"2191" : "upwards arrow",
-		"2192" : "rightwards arrow",
+		"2192" : "right-arrow",
 		"2193" : "downwards arrow",
 		"2194" : "left right arrow",
 		"2195" : "up down arrow",
