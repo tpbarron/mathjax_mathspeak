@@ -57,6 +57,20 @@ MathJax.Extension.lang_enus = {
 	rightArrowVerboseText: "RightArrow",
 	rightArrowBriefText: "R arrow",
 
+	leftBracketVerboseText: "left-bracket",
+	leftBracketBriefText: "left-brack",
+	leftBracketSuperBriefText: "L brack",
+	rightBracketVerboseText: "right-bracket",
+	rightBracketBriefText: "right-brack",
+	rightBracketSuperBriefText: "R brack",
+
+	//braces are sets
+	leftBraceVerboseText: "StartSet",
+	leftBraceBriefText: "Set",
+	rightBraceVerboseText: "EndSet",
+	rightBraceBriefText: "EndSet",
+
+
 	/* ------------------------------------------------------- */
 
 
@@ -196,14 +210,14 @@ MathJax.Extension.lang_enus = {
 
 	arrowText: function(hex, v) {
 		if (hex === "2190") {
-			if (v === 0) { //verbose
+			if (v === 0 || v === 1) { //verbose
 				return this.leftArrowVerboseText + " ";
 			} else {
 				return this.leftArrowBriefText + " ";
 			}
 		} //left
 		if (hex === "2192") {
-			if (v === 0) { //verbose
+			if (v === 0 || v === 1) { //verbose
 				return this.rightArrowVerboseText + " ";
 			} else {
 				return this.rightArrowBriefText + " ";
@@ -216,6 +230,42 @@ MathJax.Extension.lang_enus = {
 			return true;
 		}
 		return false;
+	},
+
+	bracketText: function(item, v) {
+		if (item === "[") {
+			if (v === 0) { //verbose
+				return this.leftBracketVerboseText + " ";
+			} else if (v === 1) { //brief
+				return this.leftBracketBriefText + " ";
+			} else { //superbrief
+				return this.leftBracketSuperBriefText + " ";
+			}
+		} else {
+			if (v === 0) {
+				return this.rightBracketVerboseText + " ";
+			} else if (v === 1) {
+				return this.rightBracketBriefText + " ";
+			} else {
+				return this.rightBracketSuperBriefText + " ";
+			}
+		}
+	},
+
+	braceText: function(item, v) {
+		if (item === "{") {
+			if (v === 0 || v === 1) { //verbose
+				return this.leftBraceVerboseText + " ";
+			} else { //superbrief
+				return this.leftBraceBriefText + " ";
+			}
+		} else {
+			if (v === 0 || v === 1) {
+				return this.rightBraceVerboseText + " ";
+			} else {
+				return this.rightBraceBriefText + " ";
+			}
+		}
 	},
 
 	trig: {

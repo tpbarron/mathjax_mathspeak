@@ -257,6 +257,15 @@ MathJax.Extension.jax2MathSpeak = {
 			if (this.lang.isArrow(hex)) {
 					return this.lang.arrowText(hex, this.verbosity);
 			}
+			if (item === "(" || item === ")") {
+				return this.lang.parenText(item, this.verbosity);
+			}
+			if (item === "[" || item === "]") {
+				return this.lang.bracketText(item, this.verbosity);
+			}
+			if (item === "{" || item === "}") {
+				return this.lang.braceText(item, this.verbosity);
+			}
 			if (this.lang.mocodes[item]) {
 				return this.lang.mocodes[item] + " ";
 			}
@@ -340,9 +349,6 @@ MathJax.Extension.jax2MathSpeak = {
 			if (item === "...") {
 				return this.lang.elipses();
 			}
-			if (item === "(" || item === ")") {
-				return this.lang.parenText(item, this.verbosity);
-			}
 			if (this.lang.trig[item]) {
 				return this.lang.trig[item] + " ";
 			}
@@ -398,7 +404,7 @@ MathJax.Extension.jax2MathSpeak = {
 						this.parenCount = this.parenCount + 1;
 					}
 				}
-				return this.processMathIdentifier("null", item, hex);
+				return this.processMathOperator("null", item, hex);
 				//if previous is f, g, or trig func return of and set var inside func = true, set paren count == 1
 				//if previous is not one of those, increment paren count and return "OpenParen";
 			}
@@ -409,7 +415,7 @@ MathJax.Extension.jax2MathSpeak = {
 					this.inFunction = false;
 					return "";
 				}
-				return this.processMathIdentifier("null", item, hex); // RightParen
+				return this.processMathOperator("null", item, hex); // RightParen
 				//decrement parent count, if paren count == 0, set inside func = false, return "" end of function
 			}
 		},
