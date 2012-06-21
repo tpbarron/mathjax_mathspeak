@@ -16,6 +16,10 @@
 		interpreted as negative not minus. Not sure how to deal with this yet. I'll need to 
 		think a bit about which case I want to mean what. */
 //TODO: produce squared text when exponent is 2 instead of "superscript 2 baseline"
+//TODO: the mathspeak standard wants to differentiate between subscripts and chemical formulas
+		//I don't know how they expect this to be done. how can i know FE(sub2) or O(sub2) is not just
+		//some mathematical notation?, Event if I store the abbreviations for all the elements this is 
+		//difficult
 
 MathJax.Extension.jax2MathSpeak = {
   config: {
@@ -72,6 +76,11 @@ MathJax.Extension.jax2MathSpeak = {
 			//console.log(this.mathSpeakText);
 		} else {
 			var children = this.getChildren(node);
+			/*if (type === "mroot") { //switch base and index
+				var tmp = children[1];
+				children[1] = children[0];
+				children[0] = tmp;
+			}	*/		
 			for (var i = 0, l = children.length; i < l; i++) {
 				var child = children[i];
 				if (i == 0) {this.MathMLMathSpeak.previous = "";}
@@ -170,7 +179,7 @@ MathJax.Extension.jax2MathSpeak = {
 
 		startHandler: function(e) {
 			if (e === "mfrac") return this.lang.startFrac();
-			if (e === "msqrt") return this.lang.startRoot(this.verbosity);
+			if (e === "msqrt") return this.lang.startSqrt(this.verbosity);
 			if (e === "mroot") return this.lang.startRoot(this.verbosity);
 			if (e === "mover") return this.lang.startOverScript(this.verbosity);
 		},
@@ -182,6 +191,9 @@ MathJax.Extension.jax2MathSpeak = {
 			if (t === "msub" || t === "msup" || t === "subsuppair") {
 				return true;
 			}
+			if (t === "mroot") {
+				return true;
+			}
 			return false;
 		},
 
@@ -189,6 +201,7 @@ MathJax.Extension.jax2MathSpeak = {
 			if (e === "mfrac") return this.lang.midFrac();
 			if (e === "msup") return this.lang.midSuperscript(this.verbosity);
 			if (e === "msub") return this.lang.midSubscript(this.verbosity);
+			if (e === "mroot") return this.lang.midRoot(this.verbosity);
 		},
 
 		hasEndHandler: function(t) {
@@ -207,7 +220,7 @@ MathJax.Extension.jax2MathSpeak = {
 		endHandler: function(e) {
 			if (e === "mfrac") return this.lang.endFrac();
 			if (e === "msqrt" || e === "mroot") return this.lang.endRoot();
-			if (e === "msub" || e === "msup") return this.lang.endSubscriptSuperscript();
+			if (e === "msub" || e === "msup") return this.lang.endSubscriptSuperscript(this.verbosity);
 			if (e === "mover") return this.lang.endOverScript(this.verbosity);
 		},
 

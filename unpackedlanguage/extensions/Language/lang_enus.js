@@ -14,6 +14,8 @@ MathJax.Extension.lang_enus = {
 
 	startRootText: "StartRoot",
 	startRootSuperBriefText: "Root",
+	rootIndexText: "RootIndex",
+	rootIndexSuperBriefText: "Index",
 	endRootText: "EndRoot",
 
 	startOverScriptVerboseText: "ModifyingAbove",
@@ -27,7 +29,8 @@ MathJax.Extension.lang_enus = {
 	midSuperscriptText: "Superscript",
 	midSuperscriptBriefText: "Sup",
 
-	endSubscriptSuperscriptText: "Baseline",
+	endSubscriptSuperscriptVerboseText: "Baseline",
+	endSubscriptSuperscriptBriefText: "Base",
 
 	negativeText: "Negative",
 	minusText: "Minus",
@@ -86,12 +89,27 @@ MathJax.Extension.lang_enus = {
 		return this.startFractionText + " ";
 	},
 
-	startRoot: function(v) {
+	startSqrt: function(v) {
 		if (v === 2) { //superbrief
 			return this.startRootSuperBriefText + " ";
 		}
 		return this.startRootText + " ";
 	},
+
+	startRoot: function(v) {
+		if (v === 2) {
+			return this.rootIndexSuperBriefText + " ";
+		}
+		return this.rootIndexText + " ";
+	},
+
+	midRoot: function(v) {
+		if (v === 2) { //superbrief
+			return this.startRootSuperBriefText + " ";
+		}
+		return this.startRootText + " ";
+	},
+
 
 	startOverScript: function(v) {
 		if (v === 0) { //verbose
@@ -127,8 +145,11 @@ MathJax.Extension.lang_enus = {
 		return this.endRootText + " ";
 	},
 
-	endSubscriptSuperscript: function() {
-		return this.endSubscriptSuperscriptText + " ";
+	endSubscriptSuperscript: function(v) {
+		if (v === 0) { //verbose
+			return this.endSubscriptSuperscriptVerboseText + " ";
+		}
+		return this.endSubscriptSuperscriptBriefText + " ";
 	},
 
 	endOverScript: function(v) {
@@ -1486,7 +1507,7 @@ MathJax.Extension.lang_enus = {
 		"221C" : "fourth root",
 		"2061" : "function application",
 		"&amp" : "ampersand",
-		"'" : "apostrophe",
+		"'" : "prime",
 		"++" : "multiple character operator: ++",
 		"--" : "multiple character operator: --",
 		"^" : "circumflex accent",
