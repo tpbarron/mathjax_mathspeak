@@ -20,7 +20,6 @@ MathJax.Extension.lang_enus = {
 
 	startOverScriptVerboseText: "ModifyingAbove",
 	startOverScriptBriefText: "ModAbove",
-	//TODO: allow for modifiying with varying overscripts	
 	endOverScriptText: "with Bar",	
 
 	midSubscriptVerboseText: "Subscript",

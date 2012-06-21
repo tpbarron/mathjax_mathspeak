@@ -20,6 +20,11 @@
 		//I don't know how they expect this to be done. how can i know FE(sub2) or O(sub2) is not just
 		//some mathematical notation?, Event if I store the abbreviations for all the elements this is 
 		//difficult
+//TODO: how to deal with nested fractions?
+//TODO: how to deal with nested roots?
+//TODO: how to deal with cancelled mi's?
+//TODO: expand under/over modification specifications
+		//TODO: allow for modifiying with varying overscripts
 
 MathJax.Extension.jax2MathSpeak = {
   config: {
