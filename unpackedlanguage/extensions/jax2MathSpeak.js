@@ -6,9 +6,6 @@
  *
  */
 
-//TODO: do i need to handle different types of parens? what about [, {, <
-//TODO: how to differentiate between x as var and x as multiplication? 
-	//This is ok. I differentiated based on whether it is a mi, or mo
 //TODO: handle mi mathvariants and still account for every possible char
 /*In the distance formula example for some reason I need to put the mo element inside
 		the mrow element. But when I do this mathjax creates another node in the tree
@@ -25,6 +22,9 @@
 //TODO: how to deal with cancelled mi's?
 //TODO: expand under/over modification specifications
 		//TODO: allow for modifiying with varying overscripts
+//TODO: unit abbreviations. would units generally be put in <mtext> tags? or <ms> tags? etc?
+//TODO: layouts
+//TODO: linear alg
 
 MathJax.Extension.jax2MathSpeak = {
   config: {
@@ -244,7 +244,8 @@ MathJax.Extension.jax2MathSpeak = {
 			} else if (e === "ms") { //string literal
 				return item + " ";
 			} else if (e === "mtext") {
-				return item + " ";
+				return this.processMathText(item, hex);
+				//return item + " ";
 			} else {
 				console.log(e + " ahhhh!");
 				return "";
@@ -290,6 +291,14 @@ MathJax.Extension.jax2MathSpeak = {
 			}
 			if (this.lang.mocodes[hex]) {
 				return this.lang.mocodes[hex] + " ";				
+			}
+			return item + " ";
+		},
+
+		processMathText: function(item, hex) {
+			console.log(item + " " + this.lang.abbreviations);
+			for (var i = 0; i < this.lang.abbreviations.length; i++) {
+				console.log(this.lang.abbreviations[i]);
 			}
 			return item + " ";
 		},

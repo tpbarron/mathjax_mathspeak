@@ -81,6 +81,32 @@ MathJax.Extension.lang_enus = {
 	absValEndVerboseText: "EndAbsoluteValue",
 	absValEndBriefText: "EndAbsoluteValue",
 
+	//unit abbreviations
+	s: "second",
+	min: "minute",
+	hr: "hour",
+	
+	inch: "inch",	
+	ft: "foot",
+	yd: "yard",
+	mi: "mile",
+
+	mm: "millimeter",
+	cm: "centimeter",
+	m: "meter",
+	km: "kilometer",
+
+	J: "Joule",
+	kg: "kilogram",
+	lb: "pound",	
+
+	abbreviations: [
+		this.s, this.min, this.hr, 
+		this.inch, this.ft, this.yd, this.mi, 
+		this.mm, this.cm, this.m, this.km,
+		this.J, this.kg, this.lb
+	],
+
 	/* ------------------------------------------------------- */
 
 
