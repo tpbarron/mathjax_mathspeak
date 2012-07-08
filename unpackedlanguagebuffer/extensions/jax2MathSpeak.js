@@ -16,7 +16,7 @@
 //TODO: the mathspeak standard wants to differentiate between subscripts and chemical formulas
 		//I don't know how they expect this to be done. how can i know FE(sub2) or O(sub2) is not just
 		//some mathematical notation?, Event if I store the abbreviations for all the elements this is 
-		//difficult
+		//difficult.
 //TODO: how to deal with nested fractions?
 //TODO: how to deal with nested roots?
 //TODO: how to deal with cancelled mi's?
@@ -44,7 +44,14 @@ MathJax.Extension.jax2MathSpeak = {
   
 	tagStack: [],
 	mathSpeakText: "",
-	
+	mathSpeakBufferText: "",
+	checkException: false,
+	isCurrentException: false,
+	fractionBuffer: {
+		numerator: "",
+		denominator: ""
+	},
+
 	getMathSpeakText: function() {
 		return this.mathSpeakText;
 	},
@@ -52,24 +59,54 @@ MathJax.Extension.jax2MathSpeak = {
 	generateMathSpeak: function(inputJax) {
 		this.tagStack = [];
 		this.mathSpeakText = "";
+		this.mathSpeakBufferText = "";
 		if (inputJax.root) {
 			var jax = inputJax.root;
 			this.processNode(jax);
-		} else console.log("error");
-		//start the traversal
+		} else { console.log("error"); }
 	},
 
 	processNode: function(node) {
 		if (node.data) {
-			var type = node.type;	
-			this.mathSpeakText += this.startElement(type);
+			var type = node.type;
+			
+			this.mathSpeakBufferText += this.startElement(type);
 			this.processElement(type, node);
-			this.mathSpeakText += this.endElement();
+			
+			if (this.checkException == true) {
+				if (this.isFractionException()) {
+					this.isCurrentException = true;
+					console.log("fraction exception");
+					this.mathSpeakText += this.MathMLMathSpeak.lang.fractionException(this.fractionBuffer);
+					this.fractionBuffer.numerator = "";
+					this.fractionBuffer.denominator = "";
+				}
+			}
+		
+			if (this.isCurrentException == false) {
+				this.mathSpeakBufferText += this.endElement();			
+				this.mathSpeakText += this.mathSpeakBufferText;			
+			} else { this.endElement(); } //needed to end tag and  reset isCurrentException
+
+			console.log(this.mathSpeakBufferText + " " + this.checkException);
+			this.mathSpeakBufferText = "";
 		}
+	},
+
+	isFractionException: function() {
+		var n = this.fractionBuffer.numerator;
+		var d = this.fractionBuffer.denominator;
+		//if (math.ceil(n) !== n) { return false; }
+		//if (math.ceil(d) !== d) { return false; }
+		if (n < 1 || n > 11 || n === "") { return false; }
+		if (d < 2 || d > 99 || d === "") { return false; }
+		if (n >= d) { return false; }
+		return true;
 	},
 
 	startElement: function(t) {
 		this.tagStack.push(t);
+		if (t === "mfrac") { this.checkException = true; }
 		if (this.MathMLMathSpeak.hasStartHandler(t)) {
 			return this.MathMLMathSpeak.startHandler(t);
 		} else return "";
@@ -77,28 +114,26 @@ MathJax.Extension.jax2MathSpeak = {
 
 	processElement: function(type, node) {
 		if (this.MathMLTags.isTokenElement(type)) {
-			this.mathSpeakText += this.MathMLMathSpeak.getMathSpeak(type, node);
-			//console.log(this.mathSpeakText);
+			this.mathSpeakBufferText += this.MathMLMathSpeak.getMathSpeak(type, node);
 		} else {
 			var children = this.getChildren(node);
-			/*if (type === "mroot") { //switch base and index
-				var tmp = children[1];
-				children[1] = children[0];
-				children[0] = tmp;
-			}	*/		
+			if (type === "mfrac") {
+				this.fractionBuffer.numerator = children[0].data[0].data[0];
+				this.fractionBuffer.denominator = children[1].data[0].data[0];
+			}
+			/*if (type === "msup") {
+				console.log(children[1].data[0].data[0]);					
+				if (children[1].data[0].data[0] === "2") {
+					console.log("msupchild: " + children[1].data);
+					console.log("squared");
+				}
+			}*/
 			for (var i = 0, l = children.length; i < l; i++) {
 				var child = children[i];
 				if (i == 0) {this.MathMLMathSpeak.previous = "";}
 				if (i > 0) {this.MathMLMathSpeak.previous = children[i-1];}
-				/*if (type === "msup") {
-					console.log(children[1].data[0].data[0]);					
-					if (children[1].data[0].data[0] === "2") {
-						console.log("msupchild: " + children[1].data);
-						console.log("squared");
-					}
-				}*/
 				if (i == 1 && this.MathMLMathSpeak.hasMiddleHandler(type)) {
-					this.mathSpeakText += this.MathMLMathSpeak.middleHandler(type);
+					this.mathSpeakBufferText += this.MathMLMathSpeak.middleHandler(type);
 				}
 				this.processNode(child);
 			}
@@ -107,6 +142,8 @@ MathJax.Extension.jax2MathSpeak = {
 
 	endElement: function() {
 		var t = this.tagStack.pop();
+		if (t === "mfrac") { this.checkException = false; this.isCurrentException = false; }
+		console.log("current: " + this.isCurrentException);
 		if (this.MathMLMathSpeak.hasEndHandler(t)) {
 			return this.MathMLMathSpeak.endHandler(t);
 		} else return "";

@@ -248,7 +248,6 @@ MathJax.Extension.lang_enus = {
 	},
 
 	casePrefix: function(len, isLower) {
-		console.log("case prefix: " + len + " " + isLower);
 		if (len > 1) { //use word prefix
 			if (isLower) {
 				return this.lowercaseWordText + " ";
@@ -341,6 +340,32 @@ MathJax.Extension.lang_enus = {
 			return "abs val error";
 		}
 	},
+
+	fractionException: function(fracBuffer) {
+		var n = fracBuffer.numerator;
+		var d = fracBuffer.denominator;
+		var ms = this.fractionNumerators[n-1] + "-";
+		if (n === 1) {
+			ms += this.fractionDenominators[d-1][0] + " ";
+		} else {
+			ms += this.fractionDenominators[d-1][1] + " ";
+		}
+		return ms;
+	},
+
+	fractionNumerators: [
+		"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
+	],
+
+	fractionDenominators: [
+		["one",""], 
+		["half","halves"],
+		["third","thirds"],
+		["fourth","fourths"],
+		["fifth","fifths"],
+		["sixth","sixths"],
+		["seventh","sevenths"]
+	],
 
 	trig: {
 		"sin" : "sign",
