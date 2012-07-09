@@ -344,7 +344,7 @@ MathJax.Extension.lang_enus = {
 	fractionException: function(fracBuffer) {
 		var n = fracBuffer.numerator;
 		var d = fracBuffer.denominator;
-		var ms = this.fractionNumerators[n-1] + "-";
+		var ms = this.fractionNumerators[n-1] + " ";
 		if (n === 1) {
 			ms += this.fractionDenominators[d-1][0] + " ";
 		} else {
@@ -354,7 +354,35 @@ MathJax.Extension.lang_enus = {
 	},
 
 	fractionNumerators: [
-		"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"
+		"one", "two", "three", "four", "five", 
+		"six", "seven", "eight", "nine", "ten", 
+
+		"eleven", "twelve", "thirteen", "fourteen", "fifteen", 
+		"sixteen", "seventeen", "eighteen", "nineteen", "twenty",	
+
+		"twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", 
+		"twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty",
+
+		"thirty-one", "thirty-two", "thirty-three", "thirty-four", "thirty-five", 
+		"thirty-six", "thirty-seven", "thirty-eight", "thirty-nine", "forty",
+
+		"forty-one", "forty-two", "forty-three", "forty-four", "forty-five", 
+		"forty-six", "forty-seven", "forty-eight", "forty-nine", "fifty",
+
+		"fifty-one", "fifty-two", "fifty-three", "fifty-four", "fifty-five", 
+		"fifty-six", "fifty-seven", "fifty-eight", "fifty-nine", "sixty",
+
+		"sixty-one", "sixty-two", "sixty-three", "sixty-four", "sixty-five",
+		"sixty-six", "sixty-seven", "sixty-eight", "sixty-nine", "seventy",
+
+		"seventy-one", "seventy-two", "seventy-three", "seventy-four", "seventy-five",
+		"seventy-six", "seventy-seven", "seventy-eight", "seventy-nine", "eighty",
+
+		"eighty-one", "eighty-two", "eighty-three", "eighty-four", "eighty-five",
+		"eighty-six", "eighty-seven", "eighty-eight", "eighty-nine", "ninety",
+
+		"ninety-one", "ninety-two", "ninety-three", "ninety-four", "ninety-five",
+		"ninety-six", "ninety-seven", "ninety-eight", "ninety-nine"
 	],
 
 	fractionDenominators: [
@@ -364,7 +392,109 @@ MathJax.Extension.lang_enus = {
 		["fourth","fourths"],
 		["fifth","fifths"],
 		["sixth","sixths"],
-		["seventh","sevenths"]
+		["seventh","sevenths"],
+		["eighths","eighths"],
+		["ninth","ninths"],
+		["tenth","tenths"],
+
+		["eleventh","elevenths"],
+		["twelfth","twelves"],
+		["thirteenth","thirteenths"],
+		["fourteenth","fourteenths"],
+		["fifteenth","fifteenths"],
+		["sixteenth","sixteenths"],
+		["seventeenth","seventeenths"],
+		["eighteenth","eighteenths"],
+		["nineteenth","nineteenths"],
+
+		["twentieth","twentieths"],
+		["twenty-first", "twenty-firsts"],
+		["twenty-second", "twenty-seconds"],
+		["twenty-third", "twenty-thirds"],
+		["twenty-fourth", "twenty-fourths"],
+		["twenty-fifth", "twenty-fifths"],
+		["twenty-sixth", "twenty-sixths"],
+		["twenty-seventh", "twenty-sevenths"],
+		["twenty-eigth", "twenty-eights"],
+		["twenty-ninth", "twenty-ninths"],
+
+		["thirtieth", "thirtieths"],
+		["thirty-first", "thirty-firsts"],
+		["thirty-second", "thirty-seconds"],
+		["thirty-third", "thirty-thirds"],
+		["thirty-fouth", "thirty-fourths"],
+		["thirty-fifth", "thirty-fifths"],
+		["thirty-sixth", "thirty-sixths"],
+		["thirty-seventh", "thirty-sevenths"],
+		["thirty-eight", "thirty-eights"],
+		["thirty-ninth", "thirty-ninths"],
+
+		["fortieth", "fortieths"],
+		["forty-first", "forty-firsts"],
+		["forty-second", "forty-seconds"],
+		["forty-third", "forty-thirds"],
+		["forty-fouth", "forty-fourths"],
+		["forty-fifth", "forty-fifths"],
+		["forty-sixth", "forty-sixths"],
+		["forty-seventh", "forty-sevenths"],
+		["forty-eight", "forty-eights"],
+		["forty-ninth", "forty-ninths"],
+
+
+		["fiftieth", "fiftieths"],
+		["fifty-first", "fifty-firsts"],
+		["fifty-second", "fifty-seconds"],
+		["fifty-third", "fifty-thirds"],
+		["fifty-fouth", "fifty-fourths"],
+		["fifty-fifth", "fifty-fifths"],
+		["fifty-sixth", "fifty-sixths"],
+		["fifty-seventh", "fifty-sevenths"],
+		["fifty-eight", "fifty-eights"],
+		["fifty-ninth", "fifty-ninths"],
+
+		["sixtieth", "sixtieths"],
+		["sixty-first", "sixty-firsts"],
+		["sixty-second", "sixty-seconds"],
+		["sixty-third", "sixty-thirds"],
+		["sixty-fouth", "sixty-fourths"],
+		["sixty-fifth", "sixty-fifths"],
+		["sixty-sixth", "sixty-sixths"],
+		["sixty-seventh", "sixty-sevenths"],
+		["sixty-eight", "sixty-eights"],
+		["sixty-ninth", "sixty-ninths"],
+
+		["seventieth", "seventieths"],
+		["seventy-first", "seventy-firsts"],
+		["seventy-second", "seventy-seconds"],
+		["seventy-third", "seventy-thirds"],
+		["seventy-fouth", "seventy-fourths"],
+		["seventy-fifth", "seventy-fifths"],
+		["seventy-sixth", "seventy-sixths"],
+		["seventy-seventh", "seventy-sevenths"],
+		["seventy-eight", "seventy-eights"],
+		["seventy-ninth", "seventy-ninths"],
+
+		["eightieth", "eightieths"],
+		["eighty-first", "eighty-firsts"],
+		["eighty-second", "eighty-seconds"],
+		["eighty-third", "eighty-thirds"],
+		["eighty-fouth", "eighty-fourths"],
+		["eighty-fifth", "eighty-fifths"],
+		["eighty-sixth", "eighty-sixths"],
+		["eighty-seventh", "eighty-sevenths"],
+		["eighty-eight", "eighty-eights"],
+		["eighty-ninth", "eighty-ninths"],
+
+		["ninetieth", "ninetieths"],
+		["ninety-first", "ninety-firsts"],
+		["ninety-second", "ninety-seconds"],
+		["ninety-third", "ninety-thirds"],
+		["ninety-fouth", "ninety-fourths"],
+		["ninety-fifth", "ninety-fifths"],
+		["ninety-sixth", "ninety-sixths"],
+		["ninety-seventh", "ninety-sevenths"],
+		["ninety-eight", "ninety-eights"],
+		["ninety-ninth", "ninety-ninths"],
 	],
 
 	trig: {

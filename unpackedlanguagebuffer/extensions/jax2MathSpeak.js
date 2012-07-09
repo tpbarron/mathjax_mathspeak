@@ -83,12 +83,13 @@ MathJax.Extension.jax2MathSpeak = {
 				}
 			}
 		
+			console.log("isCurrentException: " + this.isCurrentException);
+
 			if (this.isCurrentException == false) {
 				this.mathSpeakBufferText += this.endElement();			
 				this.mathSpeakText += this.mathSpeakBufferText;			
 			} else { this.endElement(); } //needed to end tag and  reset isCurrentException
 
-			console.log(this.mathSpeakBufferText + " " + this.checkException);
 			this.mathSpeakBufferText = "";
 		}
 	},
@@ -96,11 +97,14 @@ MathJax.Extension.jax2MathSpeak = {
 	isFractionException: function() {
 		var n = this.fractionBuffer.numerator;
 		var d = this.fractionBuffer.denominator;
-		//if (math.ceil(n) !== n) { return false; }
-		//if (math.ceil(d) !== d) { return false; }
-		if (n < 1 || n > 11 || n === "") { return false; }
-		if (d < 2 || d > 99 || d === "") { return false; }
-		if (n >= d) { return false; }
+		//console.log(n + " " + d);
+		if (n == "" || d == "") { return false; }
+		d = parseInt(d); n = parseInt(n);
+		if (Math.ceil(n) !== n) { return false; }
+		if (Math.ceil(d) !== d) { return false; }
+		if (n < 1 || n > 9) { return false; }
+		if (d < 2 || d > 99) { return false; }
+		//if (n >= d) { return false; }
 		return true;
 	},
 
@@ -143,7 +147,6 @@ MathJax.Extension.jax2MathSpeak = {
 	endElement: function() {
 		var t = this.tagStack.pop();
 		if (t === "mfrac") { this.checkException = false; this.isCurrentException = false; }
-		console.log("current: " + this.isCurrentException);
 		if (this.MathMLMathSpeak.hasEndHandler(t)) {
 			return this.MathMLMathSpeak.endHandler(t);
 		} else return "";
