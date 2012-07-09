@@ -25,6 +25,7 @@
 //TODO: unit abbreviations. would units generally be put in <mtext> tags? or <ms> tags? etc?
 //TODO: layouts
 //TODO: linear alg
+//TODO: overscripts and underscripts
 
 MathJax.Extension.jax2MathSpeak = {
   config: {
@@ -83,7 +84,7 @@ MathJax.Extension.jax2MathSpeak = {
 				}
 			}
 		
-			console.log("isCurrentException: " + this.isCurrentException);
+			//console.log("isCurrentException: " + this.isCurrentException);
 
 			if (this.isCurrentException == false) {
 				this.mathSpeakBufferText += this.endElement();			

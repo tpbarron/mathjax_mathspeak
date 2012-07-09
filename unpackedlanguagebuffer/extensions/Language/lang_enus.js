@@ -650,6 +650,7 @@ MathJax.Extension.lang_enus = {
 	},
 
 	mocodes: {
+		"221E": "infinity", 
 		"2018" : "left single quotation mark",
 		"2019" : "right single quotation mark",
 		"201C" : "left double quotation mark",
