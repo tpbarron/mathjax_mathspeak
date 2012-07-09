@@ -25,7 +25,6 @@
 //TODO: unit abbreviations. would units generally be put in <mtext> tags? or <ms> tags? etc?
 //TODO: layouts
 //TODO: linear alg
-//TODO: overscripts and underscripts
 
 MathJax.Extension.jax2MathSpeak = {
   config: {
@@ -140,6 +139,9 @@ MathJax.Extension.jax2MathSpeak = {
 				if (i == 1 && this.MathMLMathSpeak.hasMiddleHandler(type)) {
 					this.mathSpeakBufferText += this.MathMLMathSpeak.middleHandler(type);
 				}
+				if (i == 2 && this.MathMLMathSpeak.hasMiddle2Handler(type)) {
+					this.mathSpeakBufferText += this.MathMLMathSpeak.middle2Handler(type);
+				}
 				this.processNode(child);
 			}
 		}
@@ -217,7 +219,7 @@ MathJax.Extension.jax2MathSpeak = {
 			if (t === "mfrac" || t === "msqrt" || t === "mroot") {
 				return true;
 			}
-			if (t === "mover") {
+			if (t === "mover" || t === "munder") {
 				return true;
 			}
 			return false;
@@ -228,6 +230,8 @@ MathJax.Extension.jax2MathSpeak = {
 			if (e === "msqrt") return this.lang.startSqrt(this.verbosity);
 			if (e === "mroot") return this.lang.startRoot(this.verbosity);
 			if (e === "mover") return this.lang.startOverScript(this.verbosity);
+			if (e === "munder") return this.lang.startUnderScript(this.verbosity);
+			//if (e === "munderover") return this.lang.startUnderOverScript(this.verbosity);
 		},
 
 		hasMiddleHandler: function(t) {
@@ -240,6 +244,9 @@ MathJax.Extension.jax2MathSpeak = {
 			if (t === "mroot") {
 				return true;
 			}
+			if (t === "munderover") {
+				return true;
+			}
 			return false;
 		},
 
@@ -248,6 +255,18 @@ MathJax.Extension.jax2MathSpeak = {
 			if (e === "msup") return this.lang.midSuperscript(this.verbosity);
 			if (e === "msub") return this.lang.midSubscript(this.verbosity);
 			if (e === "mroot") return this.lang.midRoot(this.verbosity);
+			if (e === "munderover") return this.lang.midUnderOverScript(this.verbosity);
+		},
+
+		hasMiddle2Handler: function(t) {
+			if (t === "munderover") {
+				return true;
+			}
+			return false;
+		},
+
+		middle2Handler: function(e) {
+			if (e === "munderover") return this.lang.mid2UnderOverScript(this.verbosity);
 		},
 
 		hasEndHandler: function(t) {
@@ -257,7 +276,7 @@ MathJax.Extension.jax2MathSpeak = {
 			if (t === "msub" || t === "msup") {
 				return true;
 			}
-			if (t === "mover") {
+			if (t === "mover" || t === "munder" || t === "munderover") {
 				return true;
 			}
 			return false;
@@ -268,6 +287,8 @@ MathJax.Extension.jax2MathSpeak = {
 			if (e === "msqrt" || e === "mroot") return this.lang.endRoot();
 			if (e === "msub" || e === "msup") return this.lang.endSubscriptSuperscript(this.verbosity);
 			if (e === "mover") return this.lang.endOverScript(this.verbosity);
+			if (e === "munder") return this.lang.endUnderScript(this.verbosity);
+			if (e === "munderover") return this.lang.endOverUnderScript(this.verbosity);
 		},
 
 		getMathSpeak: function(e, d) {

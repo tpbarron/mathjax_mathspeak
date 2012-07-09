@@ -6,6 +6,17 @@
  *
  */
 
+//from stackoverflow
+String.prototype.format = function() {
+  var args = arguments;
+  return this.replace(/{(\d+)}/g, function(match, number) { 
+    return typeof args[number] != 'undefined'
+      ? args[number]
+      : match
+    ;
+  });
+};
+
 MathJax.Extension.lang_enus = {
 	
 	startFractionText: "StartFraction",
@@ -18,9 +29,17 @@ MathJax.Extension.lang_enus = {
 	rootIndexSuperBriefText: "Index",
 	endRootText: "EndRoot",
 
-	startOverScriptVerboseText: "ModifyingAbove",
-	startOverScriptBriefText: "ModAbove",
-	endOverScriptText: "with Bar",	
+	startOverScriptVerboseText: "Overscript",
+	endOverScriptText: "EndScripts",
+
+	startUnderScriptVerboseText: "Underscript",
+	endUnderScriptText: "EndScripts",
+
+	endScriptsText: "EndScripts",
+	
+	startModVerboseText: "ModifyingAbove",
+	startModBriefText: "ModAbove",
+	endModText: "with ",
 
 	midSubscriptVerboseText: "Subscript",
 	midSubscriptBriefText: "Sub",
@@ -128,24 +147,29 @@ MathJax.Extension.lang_enus = {
 		return this.rootIndexText + " ";
 	},
 
+	startOverScript: function(v) {
+		//if (v === 0) { //verbose
+			return this.startOverScriptVerboseText + " ";
+		//}
+	},
+
+	startUnderScript: function(v) {
+		return this.startUnderScriptVerboseText + " ";
+	},
+
+	//startUnderOverScript: function(v) {
+	//	return this.startUnderScriptVerboseText + " ";
+	//},
+
+	midFrac: function() {
+		return this.midFractionText + " ";
+	},
+
 	midRoot: function(v) {
 		if (v === 2) { //superbrief
 			return this.startRootSuperBriefText + " ";
 		}
 		return this.startRootText + " ";
-	},
-
-
-	startOverScript: function(v) {
-		if (v === 0) { //verbose
-			return this.startOverScriptVerboseText + " ";
-		} else {
-			return this.startOverScriptBriefText + " ";
-		}
-	},
-
-	midFrac: function() {
-		return this.midFractionText + " ";
 	},
 
 	midSuperscript: function(v) {
@@ -160,6 +184,14 @@ MathJax.Extension.lang_enus = {
 			return this.midSubScriptVerboseText + " ";
 		}
 		return this.midSubscriptBriefText + " ";
+	},
+
+	midUnderOverScript: function(v) {
+		return this.startUnderScriptVerboseText + " ";
+	},
+
+	mid2UnderOverScript: function(v) {
+		return this.startOverScriptVerboseText + " ";
 	},
 
 	endFrac: function() {
@@ -179,6 +211,14 @@ MathJax.Extension.lang_enus = {
 
 	endOverScript: function(v) {
 		return this.endOverScriptText + " ";
+	},
+
+	endUnderScript: function(v) {
+		return this.endUnderScriptText + " ";
+	},
+
+	endOverUnderScript: function(v) {
+		return this.endScriptsText + " ";
 	},
 
 	negative: function() {
