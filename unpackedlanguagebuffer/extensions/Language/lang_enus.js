@@ -50,6 +50,9 @@ MathJax.Extension.lang_enus = {
 	endSubscriptSuperscriptVerboseText: "Baseline",
 	endSubscriptSuperscriptBriefText: "Base",
 
+	squaredText: "Squared",
+	cubedText: "Cubed",
+
 	negativeText: "Negative",
 	minusText: "Minus",
 
@@ -156,10 +159,6 @@ MathJax.Extension.lang_enus = {
 	startUnderScript: function(v) {
 		return this.startUnderScriptVerboseText + " ";
 	},
-
-	//startUnderOverScript: function(v) {
-	//	return this.startUnderScriptVerboseText + " ";
-	//},
 
 	midFrac: function() {
 		return this.midFractionText + " ";
@@ -379,6 +378,18 @@ MathJax.Extension.lang_enus = {
 		} else {
 			return "abs val error";
 		}
+	},
+
+	exponentException: function(exponentBuffer) {
+		var b = exponentBuffer.base;
+		var p = parseInt(exponentBuffer.power);
+		var ms = b + " ";
+		if (p === 2) {
+			ms += this.squaredText + " ";
+		} else if (p === 3) {
+			ms += this.cubedText + " ";
+		}
+		return ms;
 	},
 
 	fractionException: function(fracBuffer) {

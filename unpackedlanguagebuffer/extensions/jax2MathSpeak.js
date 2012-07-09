@@ -25,6 +25,7 @@
 //TODO: unit abbreviations. would units generally be put in <mtext> tags? or <ms> tags? etc?
 //TODO: layouts
 //TODO: linear alg
+//TODO: modifers/ under and overscripts
 
 MathJax.Extension.jax2MathSpeak = {
   config: {
@@ -50,6 +51,10 @@ MathJax.Extension.jax2MathSpeak = {
 	fractionBuffer: {
 		numerator: "",
 		denominator: ""
+	},
+	exponentBuffer: {
+		base: "",
+		power: "",
 	},
 
 	getMathSpeakText: function() {
@@ -81,6 +86,13 @@ MathJax.Extension.jax2MathSpeak = {
 					this.fractionBuffer.numerator = "";
 					this.fractionBuffer.denominator = "";
 				}
+				if (this.isExponentException()) {
+					this.isCurrentException = true;
+					console.log("exponent exception");
+					this.mathSpeakText += this.MathMLMathSpeak.lang.exponentException(this.exponentBuffer);
+					this.exponentBuffer.base = "";
+					this.exponentBuffer.power = "";
+				}
 			}
 		
 			//console.log("isCurrentException: " + this.isCurrentException);
@@ -88,7 +100,7 @@ MathJax.Extension.jax2MathSpeak = {
 			if (this.isCurrentException == false) {
 				this.mathSpeakBufferText += this.endElement();			
 				this.mathSpeakText += this.mathSpeakBufferText;			
-			} else { this.endElement(); } //needed to end tag and  reset isCurrentException
+			} else { this.endElement(); } //needed to end tag and reset isCurrentException
 
 			this.mathSpeakBufferText = "";
 		}
@@ -97,9 +109,10 @@ MathJax.Extension.jax2MathSpeak = {
 	isFractionException: function() {
 		var n = this.fractionBuffer.numerator;
 		var d = this.fractionBuffer.denominator;
-		//console.log(n + " " + d);
-		if (n == "" || d == "") { return false; }
-		d = parseInt(d); n = parseInt(n);
+		try {
+			d = parseInt(d);
+			n = parseInt(n);
+		} catch(err) { return false; } //one is not an integer
 		if (Math.ceil(n) !== n) { return false; }
 		if (Math.ceil(d) !== d) { return false; }
 		if (n < 1 || n > 9) { return false; }
@@ -108,9 +121,20 @@ MathJax.Extension.jax2MathSpeak = {
 		return true;
 	},
 
+	isExponentException: function() {
+		var b = this.exponentBuffer.base;
+		var p = this.exponentBuffer.power;
+		if (b === "" || p === "") { return false; }	
+		try {
+			p = parseInt(p);
+			if (p !== 2 && p !== 3) { return false; }
+		} catch (err) { return false; } //p is not an integer
+		return true;
+	},
+
 	startElement: function(t) {
 		this.tagStack.push(t);
-		if (t === "mfrac") { this.checkException = true; }
+		if (t === "mfrac" || t === "msup") { this.checkException = true; }
 		if (this.MathMLMathSpeak.hasStartHandler(t)) {
 			return this.MathMLMathSpeak.startHandler(t);
 		} else return "";
@@ -125,13 +149,10 @@ MathJax.Extension.jax2MathSpeak = {
 				this.fractionBuffer.numerator = children[0].data[0].data[0];
 				this.fractionBuffer.denominator = children[1].data[0].data[0];
 			}
-			/*if (type === "msup") {
-				console.log(children[1].data[0].data[0]);					
-				if (children[1].data[0].data[0] === "2") {
-					console.log("msupchild: " + children[1].data);
-					console.log("squared");
-				}
-			}*/
+			if (type === "msup") {
+				this.exponentBuffer.base = children[0].data[0].data[0];
+				this.exponentBuffer.power = children[1].data[0].data[0];
+			}
 			for (var i = 0, l = children.length; i < l; i++) {
 				var child = children[i];
 				if (i == 0) {this.MathMLMathSpeak.previous = "";}
@@ -139,6 +160,7 @@ MathJax.Extension.jax2MathSpeak = {
 				if (i == 1 && this.MathMLMathSpeak.hasMiddleHandler(type)) {
 					this.mathSpeakBufferText += this.MathMLMathSpeak.middleHandler(type);
 				}
+				//middle2handler is for the overscripts which have odd text formats
 				if (i == 2 && this.MathMLMathSpeak.hasMiddle2Handler(type)) {
 					this.mathSpeakBufferText += this.MathMLMathSpeak.middle2Handler(type);
 				}
