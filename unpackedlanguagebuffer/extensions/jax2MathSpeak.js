@@ -12,7 +12,6 @@
 		and the mo element has no previous child. So my code thinks it should be
 		interpreted as negative not minus. Not sure how to deal with this yet. I'll need to 
 		think a bit about which case I want to mean what. */
-//TODO: produce squared text when exponent is 2 instead of "superscript 2 baseline"
 //TODO: the mathspeak standard wants to differentiate between subscripts and chemical formulas
 		//I don't know how they expect this to be done. how can i know FE(sub2) or O(sub2) is not just
 		//some mathematical notation?, Event if I store the abbreviations for all the elements this is 
@@ -26,6 +25,7 @@
 //TODO: layouts
 //TODO: linear alg
 //TODO: modifers/ under and overscripts
+//TODO: handle multiple exceptions at the same time, ie fractions and superscripts
 
 MathJax.Extension.jax2MathSpeak = {
   config: {
@@ -48,11 +48,13 @@ MathJax.Extension.jax2MathSpeak = {
 	mathSpeakBufferText: "",
 	checkException: false,
 	isCurrentException: false,
+	isCurrentExponentException: false,
 	fractionBuffer: {
 		numerator: "",
 		denominator: ""
 	},
 	exponentBuffer: {
+		baseText: "",
 		base: "",
 		power: "",
 	},
@@ -75,32 +77,57 @@ MathJax.Extension.jax2MathSpeak = {
 		if (node.data) {
 			var type = node.type;
 			
+			console.log("type: " + type + ", currentException: " + this.isCurrentException + ", checkException: " + this.checkException);
 			this.mathSpeakBufferText += this.startElement(type);
 			this.processElement(type, node);
 			
 			if (this.checkException == true) {
 				if (this.isFractionException()) {
+					//console.log("fraction exception");
 					this.isCurrentException = true;
-					console.log("fraction exception");
 					this.mathSpeakText += this.MathMLMathSpeak.lang.fractionException(this.fractionBuffer);
 					this.fractionBuffer.numerator = "";
 					this.fractionBuffer.denominator = "";
 				}
 				if (this.isExponentException()) {
+					//console.log("exponent exception");
 					this.isCurrentException = true;
-					console.log("exponent exception");
-					this.mathSpeakText += this.MathMLMathSpeak.lang.exponentException(this.exponentBuffer);
+					this.isCurrentExponentException = true;
+					this.checkException = false;
+					
+					var b = this.exponentBuffer.base;
+					var p = this.exponentBuffer.power;
+					
+					//console.log("pre buffer: " + this.mathSpeakBufferText);
+					//need reset because processing entirely again?
+					this.mathSpeakBufferText = "";
+					this.processNode(b);
+					//console.log("post buffer: " + this.mathSpeakBufferText);
+					
+					//console.log("baseText: " + this.exponentBuffer.baseText);
+					this.mathSpeakText += this.exponentBuffer.baseText;
+					this.mathSpeakText += this.MathMLMathSpeak.lang.exponentException(p);
+
 					this.exponentBuffer.base = "";
 					this.exponentBuffer.power = "";
+					this.exponentBuffer.baseText = "";
+					this.isCurrentExponentException = false;
 				}
 			}
-		
+
 			//console.log("isCurrentException: " + this.isCurrentException);
 
 			if (this.isCurrentException == false) {
 				this.mathSpeakBufferText += this.endElement();			
-				this.mathSpeakText += this.mathSpeakBufferText;			
-			} else { this.endElement(); } //needed to end tag and reset isCurrentException
+				this.mathSpeakText += this.mathSpeakBufferText;
+			} else { 
+				//console.log("final buffer: " + this.mathSpeakBufferText);
+				if (this.isCurrentExponentException == true) {
+					//console.log("baseText append: " + this.mathSpeakBufferText);
+					this.exponentBuffer.baseText += this.mathSpeakBufferText;
+				}
+				this.endElement();
+			} //needed to end tag and reset isCurrentException
 
 			this.mathSpeakBufferText = "";
 		}
@@ -126,13 +153,14 @@ MathJax.Extension.jax2MathSpeak = {
 		var p = this.exponentBuffer.power;
 		if (b === "" || p === "") { return false; }	
 		try {
-			p = parseInt(p);
+			if (p.data.length > 1) { return false; }
+			p = parseInt(p.data[0].data[0]);
 			if (p !== 2 && p !== 3) { return false; }
 		} catch (err) { return false; } //p is not an integer
 		return true;
 	},
 
-	startElement: function(t) {
+	startElement: function(t) {		
 		this.tagStack.push(t);
 		if (t === "mfrac" || t === "msup") { this.checkException = true; }
 		if (this.MathMLMathSpeak.hasStartHandler(t)) {
@@ -150,8 +178,8 @@ MathJax.Extension.jax2MathSpeak = {
 				this.fractionBuffer.denominator = children[1].data[0].data[0];
 			}
 			if (type === "msup") {
-				this.exponentBuffer.base = children[0].data[0].data[0];
-				this.exponentBuffer.power = children[1].data[0].data[0];
+				this.exponentBuffer.base = children[0]; //.data[0].data[0];
+				this.exponentBuffer.power = children[1]; //.data[0].data[0];
 			}
 			for (var i = 0, l = children.length; i < l; i++) {
 				var child = children[i];
@@ -171,7 +199,7 @@ MathJax.Extension.jax2MathSpeak = {
 
 	endElement: function() {
 		var t = this.tagStack.pop();
-		if (t === "mfrac") { this.checkException = false; this.isCurrentException = false; }
+		if (t === "mfrac" || t === "msup") { this.checkException = false; this.isCurrentException = false; }
 		if (this.MathMLMathSpeak.hasEndHandler(t)) {
 			return this.MathMLMathSpeak.endHandler(t);
 		} else return "";
@@ -238,12 +266,8 @@ MathJax.Extension.jax2MathSpeak = {
 		verbosity: 0,
 	
 		hasStartHandler: function(t) {
-			if (t === "mfrac" || t === "msqrt" || t === "mroot") {
-				return true;
-			}
-			if (t === "mover" || t === "munder") {
-				return true;
-			}
+			if (t === "mfrac" || t === "msqrt" || t === "mroot") { return true; }
+			if (t === "mover" || t === "munder") { return true; }
 			return false;
 		},
 
@@ -257,18 +281,10 @@ MathJax.Extension.jax2MathSpeak = {
 		},
 
 		hasMiddleHandler: function(t) {
-			if (t === "mfrac") {
-				return true;
-			}
-			if (t === "msub" || t === "msup" || t === "subsuppair") {
-				return true;
-			}
-			if (t === "mroot") {
-				return true;
-			}
-			if (t === "munderover") {
-				return true;
-			}
+			if (t === "mfrac") { return true; }
+			if (t === "msub" || t === "msup" || t === "subsuppair") { return true; }
+			if (t === "mroot") { return true; }
+			if (t === "munderover") { return true; }
 			return false;
 		},
 
@@ -281,9 +297,7 @@ MathJax.Extension.jax2MathSpeak = {
 		},
 
 		hasMiddle2Handler: function(t) {
-			if (t === "munderover") {
-				return true;
-			}
+			if (t === "munderover") { return true; }
 			return false;
 		},
 
@@ -292,15 +306,9 @@ MathJax.Extension.jax2MathSpeak = {
 		},
 
 		hasEndHandler: function(t) {
-			if (t === "mfrac" || t === "msqrt" || t === "mroot") {
-				return true;
-			}
-			if (t === "msub" || t === "msup") {
-				return true;
-			}
-			if (t === "mover" || t === "munder" || t === "munderover") {
-				return true;
-			}
+			if (t === "mfrac" || t === "msqrt" || t === "mroot") { return true; }
+			if (t === "msub" || t === "msup") { return true; }
+			if (t === "mover" || t === "munder" || t === "munderover") { return true; }
 			return false;
 		},
 
@@ -460,9 +468,6 @@ MathJax.Extension.jax2MathSpeak = {
 					return ms + item + " ";
 				}
 			}
-			//if (item === "...") {
-			//	return this.lang.ellipses();
-			//}
 			if (this.lang.trig[item]) {
 				return this.lang.trig[item] + " ";
 			}

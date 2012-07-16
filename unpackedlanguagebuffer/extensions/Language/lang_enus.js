@@ -380,16 +380,13 @@ MathJax.Extension.lang_enus = {
 		}
 	},
 
-	exponentException: function(exponentBuffer) {
-		var b = exponentBuffer.base;
-		var p = parseInt(exponentBuffer.power);
-		var ms = b + " ";
-		if (p === 2) {
-			ms += this.squaredText + " ";
-		} else if (p === 3) {
-			ms += this.cubedText + " ";
+	exponentException: function(power) {
+		var p = power.data[0].data[0];
+		if (p === "2") {
+			return this.squaredText + " ";
+		} else if (p === "3") {
+			return this.cubedText + " ";
 		}
-		return ms;
 	},
 
 	fractionException: function(fracBuffer) {
