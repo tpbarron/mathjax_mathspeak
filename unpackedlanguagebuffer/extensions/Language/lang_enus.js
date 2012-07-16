@@ -104,29 +104,61 @@ MathJax.Extension.lang_enus = {
 	absValEndBriefText: "EndAbsoluteValue",
 
 	//unit abbreviations
+	//time universal
 	s: ["s","second"],
 	min: ["min","minute"],
 	hr: ["hr","hour"],
-	
+	//area metric
+	ha: ["ha", "hectares"],
+	//area imperial
+	ac: ["ac", "acres"],
+	//length metric
+	micm: ["B5m","micrometer"],
+	mm: ["mm","millimeter"],
+	cm: ["cm","centimeter"],
+	dm: ["dm","decimeter"],
+	m: ["m","meter"],
+	km: ["km","kilometer"],
+	//length imperial
 	inch: ["in","inch"],	
 	ft: ["ft","foot"],
 	yd: ["yd","yard"],
 	mi: ["mi","mile"],
-
-	mm: ["mm","millimeter"],
-	cm: ["cm","centimeter"],
-	m: ["m","meter"],
-	km: ["km","kilometer"],
-
-	J: ["J","Joule"],
+	//volume metric
+	micl: ["B5l","microliter"],
+	ml: ["ml","milliliter"],
+	cl: ["cl","centiliter"],
+	dl: ["dl","deciliter"],
+	l: ["l","liter"],
+	dal: ["dal","dekaliter"],
+	hl: ["hl","hectoliter"],
+	kl: ["kl","kiloliter"],
+	//volume imperial
+	gal: ["gal","gallon"],
+	//mass metric
 	kg: ["kg","kilogram"],
+	hg: ["hg","hectogram"],
+	dag: ["dag","dekagram"],
+	g: ["g","gram"],
+	dg: ["dg","decigram"],
+	cg: ["cg","centigram"],
+	mg: ["mg","milligram"],
+	micg: ["B5g","microgram"],
+	//mass imperial
 	lb: ["lb","pound"],	
+	oz: ["oz","ounce"],
+	//other
+	J: ["J","Joule"],
 
 	abbreviations: function() {
-		return [this.s, this.min, this.hr, 
-		this.inch, this.ft, this.yd, this.mi, 
-		this.mm, this.cm, this.m, this.km,
-		this.J, this.kg, this.lb];
+		return [
+			this.s, this.min, this.hr,
+			this.ha, this.ac,
+			this.micm, this.mm, this.cm, this.dm, this.m, this.km, this.inch, this.ft, this.yd, this.mi,
+			this.micl, this.ml, this.cl, this.dl, this.l, this.dal, this.hl, this.kl, this.gal,
+			this.kg, this.hg, this.dag, this.g, this.dg, this.cg, this.mg, this.micg, this.lb, this.oz,
+			this.J
+		];
 	},
 
 	/* ------------------------------------------------------- */

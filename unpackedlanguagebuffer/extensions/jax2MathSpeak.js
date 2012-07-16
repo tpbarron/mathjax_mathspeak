@@ -14,7 +14,7 @@
 		think a bit about which case I want to mean what. */
 //TODO: the mathspeak standard wants to differentiate between subscripts and chemical formulas
 		//I don't know how they expect this to be done. how can i know FE(sub2) or O(sub2) is not just
-		//some mathematical notation?, Event if I store the abbreviations for all the elements this is 
+		//some mathematical notation? Even if I store the abbreviations for all the elements this is 
 		//difficult.
 //TODO: how to deal with nested fractions?
 //TODO: how to deal with nested roots?
@@ -77,7 +77,7 @@ MathJax.Extension.jax2MathSpeak = {
 		if (node.data) {
 			var type = node.type;
 			
-			console.log("type: " + type + ", currentException: " + this.isCurrentException + ", checkException: " + this.checkException);
+			//console.log("type: " + type + ", currentException: " + this.isCurrentException + ", checkException: " + this.checkException);
 			this.mathSpeakBufferText += this.startElement(type);
 			this.processElement(type, node);
 			
@@ -388,9 +388,11 @@ MathJax.Extension.jax2MathSpeak = {
 		},
 
 		processMathText: function(item, hex) {
-			var abbreviations = this.lang.abbreviations();			
+			var abbreviations = this.lang.abbreviations();
+			var charCode = this.getHexCharCode(item.charAt(0)) + item.substring(1);
 			for (var i = 0; i < abbreviations.length; i++) {
-				if (abbreviations[i][0] === item) {
+				console.log(abbreviations[i][0] + " " + item);
+				if (abbreviations[i][0] === item || abbreviations[i][0] === charCode) {
 					return abbreviations[i][1] + " ";
 				}
 			}
