@@ -114,10 +114,10 @@ MathJax.Extension.jax2MathSpeak = {
 			}
 		}
 		
-		//console.log("current exception: " + this.isCurrentException);
-		//console.log("current exp exception: " + this.isCurrentExponentException);
-		//console.log("current frac exception: " + this.isCurrentFractionException);
-		/*if (this.isCurrentException == true) {
+		console.log("current exception: " + this.isCurrentException);
+		console.log("current exp exception: " + this.isCurrentExponentException);
+		console.log("current frac exception: " + this.isCurrentFractionException);
+		if (this.isCurrentException == true && this.checkException == true) {
 			console.log("is current exception = true");
 			if (this.isCurrentExponentException == true && this.isCurrentFractionException == true) {
 				console.log("exp and frac exceptions");
@@ -151,41 +151,8 @@ MathJax.Extension.jax2MathSpeak = {
 			} else { 
 				console.log("mystery exception; this should never occur.");
 			}
-		}*/
-		
-			if (this.checkException == true) {
-				if (this.isFractionException()) {
-					console.log("fraction exception");
-					this.isCurrentException = true;
-					this.mathSpeakText += this.MathMLMathSpeak.lang.fractionException(this.fractionBuffer);
-					this.fractionBuffer.numerator = "";
-					this.fractionBuffer.denominator = "";
-				}
-				if (this.isExponentException()) {
-					console.log("exponent exception");
-					this.isCurrentException = true;
-					this.isCurrentExponentException = true;
-					this.checkException = false;
-					
-					var b = this.exponentBuffer.base;
-					var p = this.exponentBuffer.power;
-					
-					//console.log("pre buffer: " + this.mathSpeakBufferText);
-					//need reset because processing entirely again?
-					this.mathSpeakBufferText = "";
-					this.processNode(b);
-					//console.log("post buffer: " + this.mathSpeakBufferText);
-					
-					//console.log("baseText: " + this.exponentBuffer.baseText);
-					this.mathSpeakText += this.exponentBuffer.baseText;
-					this.mathSpeakText += this.MathMLMathSpeak.lang.exponentException(p);
-
-					this.exponentBuffer.base = "";
-					this.exponentBuffer.power = "";
-					this.exponentBuffer.baseText = "";
-					this.isCurrentExponentException = false;
-				}
-			}
+			this.isCurrentException == false;
+		}
 	},
 		
 	isFractionException: function() {
@@ -572,8 +539,7 @@ MathJax.Extension.jax2MathSpeak = {
 				if (this.previous !== "") {
 					var previtem = this.previous.data[0].data[0];
 					var prevhex = this.getHexCharCode(previtem); //previtem.charCodeAt().toString(16).toUpperCase();
-					if (this.isFunctionPrefix(previtem)) { 
-//previtem === "f" || previtem === "g" || this.trig[previtem]) {
+					if (this.isFunctionPrefix(previtem)) { //previtem === "f" || previtem === "g" || this.trig[previtem]) {
 						this.inFunction = true;
 						this.parenCount = this.parenCount + 1;
 						return this.lang.functionOf();
@@ -608,11 +574,11 @@ MathJax.Extension.jax2MathSpeak = {
 
 		//helper functions
 		isLower: function(c) {
-      var code = c.charCodeAt(0);
-      if(code > 96 && code < 123) {
-         return true;
-      }
-      return false;
+			var code = c.charCodeAt(0);
+			if(code > 96 && code < 123) {
+				return true;
+			}
+			return false;
 		},
 
 		isUpper: function(c) {
@@ -648,3 +614,39 @@ MathJax.Extension.jax2MathSpeak = {
 
 MathJax.Hub.Register.PreProcessor(["PreProcess",MathJax.Extension.jax2MathSpeak]);
 MathJax.Ajax.loadComplete("[MathJax]/extensions/jax2MathSpeak.js");
+
+
+/*	if (this.checkException == true) {
+		if (this.isFractionException()) {
+			console.log("fraction exception");
+			this.isCurrentException = true;
+			this.mathSpeakText += this.MathMLMathSpeak.lang.fractionException(this.fractionBuffer);
+			this.fractionBuffer.numerator = "";
+			this.fractionBuffer.denominator = "";
+			this.isCurrentFractionException = false;
+		}
+		if (this.isExponentException()) {
+			console.log("exponent exception");
+			this.isCurrentException = true;
+			this.isCurrentExponentException = true;
+			this.checkException = false;
+			
+			var b = this.exponentBuffer.base;
+			var p = this.exponentBuffer.power;
+			
+			//console.log("pre buffer: " + this.mathSpeakBufferText);
+			//need reset because processing entirely again?
+			this.mathSpeakBufferText = "";
+			this.processNode(b);
+			//console.log("post buffer: " + this.mathSpeakBufferText);
+			
+			//console.log("baseText: " + this.exponentBuffer.baseText);
+			this.mathSpeakText += this.exponentBuffer.baseText;
+			this.mathSpeakText += this.MathMLMathSpeak.lang.exponentException(p);
+	
+			this.exponentBuffer.base = "";
+			this.exponentBuffer.power = "";
+			this.exponentBuffer.baseText = "";
+			this.isCurrentExponentException = false;
+		}
+	}*/
