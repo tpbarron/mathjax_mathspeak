@@ -1,21 +1,11 @@
 /*************************************************************
  *
- *  MathJax/extensions/Language/lang_enUS.js
+ *  MathJax/extensions/Language/lang_enus.js
  *  
- *  Implements Jax to MathSpeak
+ *  English US locale for MathSpeak
  *
  */
 
-//from stackoverflow
-String.prototype.format = function() {
-  var args = arguments;
-  return this.replace(/{(\d+)}/g, function(match, number) { 
-    return typeof args[number] != 'undefined'
-      ? args[number]
-      : match
-    ;
-  });
-};
 
 MathJax.Extension.lang_enus = {
 	
@@ -152,11 +142,17 @@ MathJax.Extension.lang_enus = {
 
 	abbreviations: function() {
 		return [
+			//time
 			this.s, this.min, this.hr,
+			//area
 			this.ha, this.ac,
+			//length
 			this.micm, this.mm, this.cm, this.dm, this.m, this.km, this.inch, this.ft, this.yd, this.mi,
+			//volume
 			this.micl, this.ml, this.cl, this.dl, this.l, this.dal, this.hl, this.kl, this.gal,
+			//mass
 			this.kg, this.hg, this.dag, this.g, this.dg, this.cg, this.mg, this.micg, this.lb, this.oz,
+			//other
 			this.J
 		];
 	},

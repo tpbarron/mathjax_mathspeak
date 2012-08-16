@@ -1779,16 +1779,23 @@ MathJax.Hub.Startup = {
     //
     if (this.params.config) {
       var files = this.params.config.split(/,/);
+			var lang_exists = false;
 			console.log("config files " + files);
       for (var i = 0, m = files.length; i < m; i++) {
         if (!files[i].match(/\.js$/)) {files[i] += ".js"}
 				if (files[i].substring(0,4) === "lang") {
+					lang_exists = true;
 					MathJax.Hub.Config.lang = files[i].substring(0, files[i].length-3);
 					this.queue.Push(["Require",MathJax.Ajax,this.URL("extensions/Language",files[i])]);
 				} else {
 	        this.queue.Push(["Require",MathJax.Ajax,this.URL("config",files[i])]);
 				}
       }
+      if (lang_exists == false) {
+      	console.log("default lang");
+      	MathJax.Hub.Config.lang = "lang_enus";
+      	this.queue.Push(["Require",MathJax.Ajax,this.URL("extensions/Language","lang_enus.js")]);
+			}
     }
     //
     //  Run the deprecated configuration script, if any (ignoring return value)

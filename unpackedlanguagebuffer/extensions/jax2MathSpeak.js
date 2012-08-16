@@ -6,12 +6,11 @@
  *
  */
 
-//TODO: handle mi mathvariants and still account for every possible char
 /*In the distance formula example for some reason I need to put the mo element inside
 		the mrow element. But when I do this mathjax creates another node in the tree
 		and the mo element has no previous child. So my code thinks it should be
 		interpreted as negative not minus. Not sure how to deal with this yet. I'll need to 
-		think a bit about which case I want to mean what. */
+		think a bit about which case I want to handle what. */
 //TODO: the mathspeak standard wants to differentiate between subscripts and chemical formulas
 		//I don't know how they expect this to be done. how can i know FE(sub2) or O(sub2) is not just
 		//some mathematical notation? Even if I store the abbreviations for all the elements this is 
@@ -48,6 +47,7 @@ MathJax.Extension.jax2MathSpeak = {
 	mathSpeakBufferText: "",
 	checkException: false,
 	isCurrentException: false,
+	isCurrentFractionException: false,
 	isCurrentExponentException: false,
 	fractionBuffer: {
 		numerator: "",
@@ -69,6 +69,7 @@ MathJax.Extension.jax2MathSpeak = {
 		this.mathSpeakBufferText = "";
 		if (inputJax.root) {
 			var jax = inputJax.root;
+			console.log(jax);
 			this.processNode(jax);
 		} else { console.log("error"); }
 	},
@@ -81,16 +82,87 @@ MathJax.Extension.jax2MathSpeak = {
 			this.mathSpeakBufferText += this.startElement(type);
 			this.processElement(type, node);
 			
+			this.processExceptions();
+
+			//console.log("isCurrentException: " + this.isCurrentException);
+
+			// if no exception proceed normally
+			if (this.isCurrentException == false) {
+				this.mathSpeakBufferText += this.endElement();			
+				this.mathSpeakText += this.mathSpeakBufferText;
+			} else { //otherwise 
+				if (this.isCurrentExponentException == true) {
+					this.exponentBuffer.baseText += this.mathSpeakBufferText;
+				}
+				this.endElement();
+			} //needed to end tag and reset isCurrentException
+
+			this.mathSpeakBufferText = "";
+		}
+	},
+
+	processExceptions: function() {
+		if (this.checkException == true) {
+			//set initial exceptions
+			if (this.isFractionException()) {
+				this.isCurrentException = true;
+				this.isCurrentFractionException = true;
+			}
+			if (this.isExponentException()) {
+				this.isCurrentException = true;
+				this.isCurrentExponentException = true;
+			}
+		}
+		
+		//console.log("current exception: " + this.isCurrentException);
+		//console.log("current exp exception: " + this.isCurrentExponentException);
+		//console.log("current frac exception: " + this.isCurrentFractionException);
+		/*if (this.isCurrentException == true) {
+			console.log("is current exception = true");
+			if (this.isCurrentExponentException == true && this.isCurrentFractionException == true) {
+				console.log("exp and frac exceptions");
+			} else if (this.isCurrentFractionException == true) {
+				console.log("fraction2 exception");
+				this.mathSpeakText += this.MathMLMathSpeak.lang.fractionException(this.fractionBuffer);
+				this.fractionBuffer.numerator = "";
+				this.fractionBuffer.denominator = "";
+				this.isCurrentFractionException = false;
+			} else if (this.isCurrentExponentException == true) {
+				console.log("exponent exception2");
+				this.checkException = false;
+								
+				var b = this.exponentBuffer.base;
+				var p = this.exponentBuffer.power;
+		
+				//console.log("pre buffer: " + this.mathSpeakBufferText);
+				//need reset because processing entirely again?
+				this.mathSpeakBufferText = "";
+				this.processNode(b);
+				//console.log("post buffer: " + this.mathSpeakBufferText);
+		
+				//console.log("baseText: " + this.exponentBuffer.baseText);
+				this.mathSpeakText += this.exponentBuffer.baseText;
+				this.mathSpeakText += this.MathMLMathSpeak.lang.exponentException(p);
+
+				this.exponentBuffer.base = "";
+				this.exponentBuffer.power = "";
+				this.exponentBuffer.baseText = "";
+				this.isCurrentExponentException = false;
+			} else { 
+				console.log("mystery exception; this should never occur.");
+			}
+		}*/
+		
 			if (this.checkException == true) {
 				if (this.isFractionException()) {
-					//console.log("fraction exception");
+					console.log("fraction exception");
 					this.isCurrentException = true;
 					this.mathSpeakText += this.MathMLMathSpeak.lang.fractionException(this.fractionBuffer);
 					this.fractionBuffer.numerator = "";
 					this.fractionBuffer.denominator = "";
 				}
 				if (this.isExponentException()) {
-					//console.log("exponent exception");
+					console.log("exponent exception");
 					this.isCurrentException = true;
 					this.isCurrentExponentException = true;
 					this.checkException = false;
@@ -114,25 +186,8 @@ MathJax.Extension.jax2MathSpeak = {
 					this.isCurrentExponentException = false;
 				}
 			}
-
-			//console.log("isCurrentException: " + this.isCurrentException);
-
-			if (this.isCurrentException == false) {
-				this.mathSpeakBufferText += this.endElement();			
-				this.mathSpeakText += this.mathSpeakBufferText;
-			} else { 
-				//console.log("final buffer: " + this.mathSpeakBufferText);
-				if (this.isCurrentExponentException == true) {
-					//console.log("baseText append: " + this.mathSpeakBufferText);
-					this.exponentBuffer.baseText += this.mathSpeakBufferText;
-				}
-				this.endElement();
-			} //needed to end tag and reset isCurrentException
-
-			this.mathSpeakBufferText = "";
-		}
 	},
-
+		
 	isFractionException: function() {
 		var n = this.fractionBuffer.numerator;
 		var d = this.fractionBuffer.denominator;
@@ -391,9 +446,9 @@ MathJax.Extension.jax2MathSpeak = {
 			var abbreviations = this.lang.abbreviations();
 			var charCode = this.getHexCharCode(item.charAt(0)) + item.substring(1);
 			for (var i = 0; i < abbreviations.length; i++) {
-				console.log(abbreviations[i][0] + " " + item);
-				if (abbreviations[i][0] === item || abbreviations[i][0] === charCode) {
-					return abbreviations[i][1] + " ";
+				var abbr = abbreviations[i];
+				if (abbr[0] === item || abbr[0] === charCode) {
+					return abbr[1] + " ";
 				}
 			}
 			return item + " ";
@@ -461,29 +516,29 @@ MathJax.Extension.jax2MathSpeak = {
 			//console.log(d);
 			//console.log(item);
 			//maybe I should do item.toLowerCase() to ensure consistency
+			var ms = "";
 			if (item === "") {return "";}
 			if (d.mathvariant) {
 				var v = d.mathvariant;
 				if (v === "script" || v === "bold" || v === "italic" || "double-struck" || "bold-fraktur" || "script" || "bold-script" || "fraktur" || "sans-serif" || "bold-sans-serif" || "sans-serif-italic" || "sans-serif-bold-italic" || "monospace") {
-					var ms = v + " ";
-					if (this.isUpper(item)) {ms += this.lang.uppercaseCharText + " ";}
-					return ms + item + " ";
+					ms += v + " ";
 				}
 			}
+			if (this.isUpper(item)) {
+				ms += this.lang.uppercaseCharText + " ";
+			}					
 			if (this.lang.trig[item]) {
-				return this.lang.trig[item] + " ";
+				return ms + this.lang.trig[item] + " ";
 			}
 			if (this.lang.greek[hex]) {
-				return this.lang.greek[hex] + " ";
+				return ms + this.lang.greek[hex] + " ";
 			}
 			if (this.lang.mocodes[hex]) {
-				return this.lang.mocodes[hex] + " ";
+				return ms + this.lang.mocodes[hex] + " ";
 			}
 			if (this.lang.mocodes[item]) {
-				return this.lang.mocodes[item] + " ";
+				return ms + this.lang.mocodes[item] + " ";
 			}
-			var ms = "";
-			if (this.isUpper(item)) {ms += this.lang.uppercaseCharText + " ";}
 			return ms + item + " ";
 		},
 
