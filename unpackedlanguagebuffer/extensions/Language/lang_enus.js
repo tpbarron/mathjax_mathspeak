@@ -12,6 +12,14 @@ MathJax.Extension.lang_enus = {
 	startFractionText: "StartFraction",
 	midFractionText: "Over",	
 	endFractionText: "EndFraction",
+	
+	startFractionPrefixText: "Start",
+	midFractionPrefixText: "Over",
+	endFractionPrefixText: "End",
+
+	fractionVerboseText: "Fraction",
+	fractionBriefText: "Frac",
+	fractionSuperBriefText: "Frac",
 
 	startRootText: "StartRoot",
 	startRootSuperBriefText: "Root",
@@ -1065,9 +1073,10 @@ MathJax.Extension.lang_enus = {
 		"22E8" : "precedes but not equivalent to",
 		"22E9" : "succeeds but not equivalent to",
 		"22F0" : "up right diagonal ellipsis",
+		"22F1" : "down right diagonal ellipsis",
 		"22F2" : "element of with long horizontal stroke",
 		"22F3" : "element of with vertical bar at end of horizontal stroke",
-		"22F4" : " element of with vertical bar at end of horizontal stroke",
+		"22F4" : "element of with vertical bar at end of horizontal stroke",
 		"22F5" : "element of with dot above",
 		"22F6" : "element of with overbar",
 		"22F7" : " element of with overbar",

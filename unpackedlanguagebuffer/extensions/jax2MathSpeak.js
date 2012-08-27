@@ -15,8 +15,8 @@
 		//I don't know how they expect this to be done. how can i know FE(sub2) or O(sub2) is not just
 		//some mathematical notation? Even if I store the abbreviations for all the elements this is 
 		//difficult.
-//TODO: how to deal with nested fractions?
-//TODO: how to deal with nested roots?
+//TODO: (imp) how to deal with nested fractions?
+//TODO: (imp) how to deal with nested roots?
 //TODO: how to deal with cancelled mi's?
 //TODO: expand under/over modification specifications
 		//TODO: allow for modifiying with varying overscripts
@@ -26,29 +26,35 @@
 //TODO: modifers/ under and overscripts
 //TODO: handle multiple exceptions at the same time, ie fractions and superscripts
 
+
 MathJax.Extension.jax2MathSpeak = {
-  config: {
-    verbosity: 1,
-    verbosity_options: ["verbose","brief","superbrief"]
-  },
+  	config: {
+    	verbosity: 1,
+   		verbosity_options: ["verbose","brief","superbrief"]
+  	},
   
-  PreProcess: function (element) {
+  	PreProcess: function (element) {
 		if (!this.configured) {
 			this.config = MathJax.Hub.CombineConfig("jax2MathSpeak", this.config);
-      if (this.config.Augment) {MathJax.Hub.Insert(this,this.config.Augment)}
+    		if (this.config.Augment) {MathJax.Hub.Insert(this,this.config.Augment)}
 			this.MathMLMathSpeak.lang = MathJax.Extension[MathJax.Hub.Config.lang];
 			this.MathMLMathSpeak.verbosity = this.config.verbosity;
 			this.configured = true;
-    }
-  },
+    	}
+  	},
   
 	tagStack: [],
 	mathSpeakText: "",
 	mathSpeakBufferText: "",
+	
 	checkException: false,
 	isCurrentException: false,
 	isCurrentFractionException: false,
+	isCurrentNestedFractionException: false,
 	isCurrentExponentException: false,
+	
+	mfracCount: 0,
+	
 	fractionBuffer: {
 		numerator: "",
 		denominator: ""
@@ -69,7 +75,6 @@ MathJax.Extension.jax2MathSpeak = {
 		this.mathSpeakBufferText = "";
 		if (inputJax.root) {
 			var jax = inputJax.root;
-			console.log(jax);
 			this.processNode(jax);
 		} else { console.log("error"); }
 	},
@@ -78,13 +83,10 @@ MathJax.Extension.jax2MathSpeak = {
 		if (node.data) {
 			var type = node.type;
 			
-			//console.log("type: " + type + ", currentException: " + this.isCurrentException + ", checkException: " + this.checkException);
 			this.mathSpeakBufferText += this.startElement(type);
 			this.processElement(type, node);
 			
-			this.processExceptions();
-
-			//console.log("isCurrentException: " + this.isCurrentException);
+			this.processExceptions(type, node);
 
 			// if no exception proceed normally
 			if (this.isCurrentException == false) {
@@ -101,12 +103,16 @@ MathJax.Extension.jax2MathSpeak = {
 		}
 	},
 
-	processExceptions: function() {
+	processExceptions: function(type, node) {
 		if (this.checkException == true) {
 			//set initial exceptions
 			if (this.isFractionException()) {
 				this.isCurrentException = true;
 				this.isCurrentFractionException = true;
+			}
+			if (this.isNestedFractionException(type, node)) {
+				this.isCurrentException = true;
+				this.isCurrentNestedFractionException = true;
 			}
 			if (this.isExponentException()) {
 				this.isCurrentException = true;
@@ -114,15 +120,21 @@ MathJax.Extension.jax2MathSpeak = {
 			}
 		}
 		
-		console.log("current exception: " + this.isCurrentException);
+		/*console.log("current exception: " + this.isCurrentException);
 		console.log("current exp exception: " + this.isCurrentExponentException);
-		console.log("current frac exception: " + this.isCurrentFractionException);
+		console.log("current frac exception: " + this.isCurrentFractionException);*/
+		console.log("current nested frac exception: " + this.isCurrentNestedFractionException);
 		if (this.isCurrentException == true && this.checkException == true) {
 			console.log("is current exception = true");
 			if (this.isCurrentExponentException == true && this.isCurrentFractionException == true) {
 				console.log("exp and frac exceptions");
+			} else if (this.isCurrentNestedFractionException == true) {
+				console.log("nested fraction exception");
+				//var d = this.getMaximumFractionDepth(node);
+				//this.mathSpeakText += 
+				this.isCurrentNestedFractionException = false;
 			} else if (this.isCurrentFractionException == true) {
-				console.log("fraction2 exception");
+				console.log("fraction exception2");
 				this.mathSpeakText += this.MathMLMathSpeak.lang.fractionException(this.fractionBuffer);
 				this.fractionBuffer.numerator = "";
 				this.fractionBuffer.denominator = "";
@@ -130,17 +142,24 @@ MathJax.Extension.jax2MathSpeak = {
 			} else if (this.isCurrentExponentException == true) {
 				console.log("exponent exception2");
 				this.checkException = false;
-								
 				var b = this.exponentBuffer.base;
 				var p = this.exponentBuffer.power;
-		
-				//console.log("pre buffer: " + this.mathSpeakBufferText);
+				
+				console.log("pre buffer: " + this.mathSpeakBufferText);
 				//need reset because processing entirely again?
-				this.mathSpeakBufferText = "";
+				//no, need to remove last addition which is not necessarily
+				//this.mathSpeakBufferText = "";
+				
+				var t = this.mathSpeakBufferText;
+				console.log("t: " + t);
+				//this is hacky
+				t = t.substring(0, t.lastIndexOf(" ", t.length-2)) + " ";
+				this.mathSpeakBufferText = t;
 				this.processNode(b);
-				//console.log("post buffer: " + this.mathSpeakBufferText);
 		
+				//console.log("post buffer: " + this.mathSpeakBufferText);
 				//console.log("baseText: " + this.exponentBuffer.baseText);
+				
 				this.mathSpeakText += this.exponentBuffer.baseText;
 				this.mathSpeakText += this.MathMLMathSpeak.lang.exponentException(p);
 
@@ -151,7 +170,8 @@ MathJax.Extension.jax2MathSpeak = {
 			} else { 
 				console.log("mystery exception; this should never occur.");
 			}
-			this.isCurrentException == false;
+			this.isCurrentException = false;
+			//this.checkException = false;
 		}
 	},
 		
@@ -169,6 +189,55 @@ MathJax.Extension.jax2MathSpeak = {
 		//if (n >= d) { return false; }
 		return true;
 	},
+	
+	//TODO: check functionality
+	isNestedFractionException: function(type, node) {
+		console.log("Testing nesting");
+		console.log(node);
+		if (type != "mfrac") return false;
+		
+		console.log("Max depth: " + this.getMaximumFractionDepth(node));
+		return this.getMaximumFractionDepth(node) > 1;
+	},
+	
+	// thank you Martin!
+	getMaximumFractionDepth: function(node) {
+		var maxDepth = 1;
+		var currentDepth = 1;
+		var n = node.data[0]; //first child
+		do {
+			console.log("Max: " + maxDepth + ", Current: " + currentDepth);
+			console.log("index: " + n.parent.data.indexOf(n) + ", length: " + n.parent.data.length);       
+			if (n.type == "mfrac") {
+				console.log("type: mfrac");
+				currentDepth++; //if child is frac, increment
+				if (currentDepth > maxDepth) { maxDepth = currentDepth; }
+			}
+			if (this.hasChildren(n)) { //if child has children
+				n = n.data[0]; //set to first child
+				console.log("child: " + n);
+			} else if (n.parent.data.indexOf(n) + 1 < n.parent.data.length) { //no children but sibling, move to next
+				n = n.parent.data[n.parent.data.indexOf(n) + 1];
+				console.log("sibling: " + n);
+			} else { //no siblings.. go up a level until you hit either a parent's next sibling or the original fraction
+				while (n.parent != node) {
+					n = n.parent; // climb back up
+					// if we were in a fraction element, decrement the depth counter
+					if (n.type == "mfrac") { currentDepth--; }
+					// parent had a following sibling, awesome. But if not we will go up again, right
+					if (n.parent.data.indexOf(n) + 1 < n.parent.data.length) {
+						n =  n.parent.data[n.parent.data.indexOf(n) + 1];
+						break;
+					}
+				}
+				if (n.parent == node) { 
+					console.log("parent == node");
+					n = null; 
+				} //this is the end
+			}
+		} while (n != null);
+		return maxDepth;
+	},
 
 	isExponentException: function() {
 		var b = this.exponentBuffer.base;
@@ -185,6 +254,7 @@ MathJax.Extension.jax2MathSpeak = {
 	startElement: function(t) {		
 		this.tagStack.push(t);
 		if (t === "mfrac" || t === "msup") { this.checkException = true; }
+		if (t === "mfrac") { this.mfracCount += 1; }
 		if (this.MathMLMathSpeak.hasStartHandler(t)) {
 			return this.MathMLMathSpeak.startHandler(t);
 		} else return "";
@@ -200,8 +270,8 @@ MathJax.Extension.jax2MathSpeak = {
 				this.fractionBuffer.denominator = children[1].data[0].data[0];
 			}
 			if (type === "msup") {
-				this.exponentBuffer.base = children[0]; //.data[0].data[0];
-				this.exponentBuffer.power = children[1]; //.data[0].data[0];
+				this.exponentBuffer.base = children[0];
+				this.exponentBuffer.power = children[1];
 			}
 			for (var i = 0, l = children.length; i < l; i++) {
 				var child = children[i];
@@ -221,7 +291,12 @@ MathJax.Extension.jax2MathSpeak = {
 
 	endElement: function() {
 		var t = this.tagStack.pop();
-		if (t === "mfrac" || t === "msup") { this.checkException = false; this.isCurrentException = false; }
+		if (t === "msup") { this.checkException = false; this.isCurrentException = false; }
+		if (t === "mfrac") { 
+			//this.checkException = false; this.isCurrentException = false;
+			this.mfracCount -= 1; 
+			if (this.mfracCount == 0) { this.checkException = false; this.isCurrentException = false; }
+		}
 		if (this.MathMLMathSpeak.hasEndHandler(t)) {
 			return this.MathMLMathSpeak.endHandler(t);
 		} else return "";
